@@ -1,0 +1,45 @@
+# QSGW – Full Stack
+# Usage: docker compose -f infra/docker/docker-compose.yml up -d
+
+include:
+  - docker-compose.deps.yml
+
+services:
+  qsgw-gateway:
+    build:
+      context: ../..
+      dockerfile: gateway/Dockerfile
+    ports:
+      - "8443:8443"
+
+  qsgw-control-plane:
+    build:
+      context: ../..
+      dockerfile: control-plane/Dockerfile
+    environment:
+      QSGW_PORT: "8085"
+      QSGW_DATABASE_URL: "postgres://quantun:quantun_dev@postgres:5432/qsgw?sslmode=disable"
+      QSGW_ETCD_ADDR: "http://etcd:2379"
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      etcd:
+        condition: service_healthy
+
+  qsgw-ai-engine:
+    build:
+      context: ../..
+      dockerfile: ai-engine/Dockerfile
+    ports:
+      - "8086:8086"
+
+  qsgw-admin:
+    build:
+      context: ../..
+      dockerfile: admin/Dockerfile
+    ports:
+      - "3003:80"
+    depends_on:
+      - qsgw-control-plane

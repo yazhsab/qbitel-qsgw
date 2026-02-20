@@ -1,0 +1,24 @@
+[package]
+name = "quantun-qsgw-gateway"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+quantun-types = { path = "../types" }
+quantun-crypto = { path = "../crypto" }
+quantun-tls = { path = "../tls" }
+tokio = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true }
+http = { workspace = true }
+axum = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+http-body-util = "0.1"
+tracing = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tower = "0.5"

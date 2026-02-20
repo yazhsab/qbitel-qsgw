@@ -1,0 +1,36 @@
+# QSGW – External Dependencies
+# Usage: docker compose -f infra/docker/docker-compose.deps.yml up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: quantun
+      POSTGRES_PASSWORD: quantun_dev
+      POSTGRES_DB: qsgw
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quantun"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  etcd:
+    image: bitnami/etcd:3.5
+    environment:
+      ALLOW_NONE_AUTHENTICATION: "yes"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://0.0.0.0:2379"
+      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+    ports:
+      - "2379:2379"
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_data:

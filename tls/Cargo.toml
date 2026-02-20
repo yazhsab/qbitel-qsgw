@@ -1,0 +1,14 @@
+[package]
+name = "quantun-tls"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+quantun-types = { path = "../types" }
+quantun-crypto = { path = "../crypto" }
+rustls = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
