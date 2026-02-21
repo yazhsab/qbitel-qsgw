@@ -42,53 +42,50 @@ QSGW is designed around the following principles:
 
 ## System Overview
 
-```
-                        +-------+
-                        | Client|
-                        +---+---+
-                            | TLS 1.3 (PQC)
-                            v
-  +----------------------------------------------------------+
-  |                    QSGW Gateway (Rust)                    |
-  |  +-------------+ +------------+ +-------+ +----------+   |
-  |  |PQC TLS Term.| |Auth Layer  | |Rate   | |PQC       |   |
-  |  |ML-KEM/ML-DSA| |JWT+API Key | |Limiter| |Enforce   |   |
-  |  +------+------+ +-----+------+ +---+---+ +----+-----+   |
-  |         |               |            |          |         |
-  |         v               v            v          v         |
-  |  +--------------------------------------------------+    |
-  |  |           Reverse Proxy Engine                    |    |
-  |  |   Route matching -> Header rewriting -> Forward   |    |
-  |  +---------------------------+----------------------+    |
-  +--------------------------|-----------------------------+
-                             |
-            +----------------+----------------+
-            |                                 |
-            v                                 v
-  +------------------+             +--------------------+
-  | Control Plane    |             | Upstream Services  |
-  | (Go, Chi v5)     |             | (your backends)    |
-  | Gateways, Routes |             +--------------------+
-  | Upstreams, Threats|
-  +--------+---------+
-           |
-    +------+------+
-    |             |
-    v             v
-  +--------+   +-------+       +------------------+
-  |Postgres|   | etcd  |       | AI Engine        |
-  |  5432  |   | 2379  |       | (Python, FastAPI) |
-  +--------+   +-------+       | Anomaly Detection|
-                                | Bot Detection    |
-                                | port 8086        |
-                                +------------------+
-           |
-           v
-  +------------------+
-  | Admin Dashboard  |
-  | (React 19)       |
-  | port 3003        |
-  +------------------+
+```mermaid
+flowchart TD
+    Client([Client])
+    Client -->|"TLS 1.3 (PQC)"| GW
+
+    subgraph GW["QSGW Gateway (Rust)"]
+        TLS["PQC TLS Termination\nML-KEM / ML-DSA"]
+        AuthLayer["Auth Layer\nJWT + API Key"]
+        RateLimiter["Rate Limiter"]
+        PQCEnforce["PQC Enforcement"]
+        ReverseProxy["Reverse Proxy Engine\nRoute matching --> Header rewriting --> Forward"]
+        TLS --> ReverseProxy
+        AuthLayer --> ReverseProxy
+        RateLimiter --> ReverseProxy
+        PQCEnforce --> ReverseProxy
+    end
+
+    GW -->|"Manage config"| CP
+    GW -->|"Proxy traffic"| Upstream["Upstream Services\n(your backends)"]
+
+    subgraph Infra["Infrastructure"]
+        PG[("PostgreSQL\nport 5432")]
+        etcd[("etcd\nport 2379")]
+    end
+
+    subgraph CP["Control Plane (Go, Chi v5)"]
+        CPCore["Gateways, Routes\nUpstreams, Threats"]
+    end
+
+    CP --> PG
+    CP --> etcd
+
+    subgraph AIBlock["AI Engine (Python, FastAPI) -- port 8086"]
+        Anomaly["Anomaly Detection"]
+        Bot["Bot Detection"]
+    end
+
+    GW -->|"Analyze traffic"| AIBlock
+
+    subgraph Dashboard["Admin Dashboard"]
+        AdminUI["React 19\nport 3003"]
+    end
+
+    PG --> Dashboard
 ```
 
 ---
@@ -172,7 +169,7 @@ Provides TLS configuration types and cipher suite definitions that integrate wit
 
 ### Control Plane (Go)
 
-**Module**: `github.com/quantun-opensource/qsgw/control-plane` | **Location**: `control-plane/`
+**Module**: `github.com/yazhsab/qbitel-qsgw/control-plane` | **Location**: `control-plane/`
 
 The control plane is a REST API built with Chi v5 that manages gateway configuration stored in PostgreSQL.
 
@@ -252,7 +249,7 @@ React 19 single-page application built with Vite 6 and TypeScript 5.7.
 
 ### Shared Middleware (Go)
 
-**Module**: `github.com/quantun-opensource/qsgw/shared/go` | **Location**: `shared/go/`
+**Module**: `github.com/yazhsab/qbitel-qsgw/shared/go` | **Location**: `shared/go/`
 
 Reusable Go middleware used by the control plane.
 
@@ -270,118 +267,69 @@ Reusable Go middleware used by the control plane.
 
 ### Request Processing Pipeline
 
-```
-Client Request
-     |
-     v
-[1] TLS Termination (PQC handshake, cipher suite negotiation)
-     |
-     v
-[2] PQC Enforcement Middleware
-     |-- Check x-tls-cipher-suite header
-     |-- If PQC_ONLY policy and classical cipher -> 403 Forbidden
-     |-- Log: method, path, status, duration, pqc flag
-     |
-     v
-[3] Authentication Middleware
-     |-- Check bypass paths (/health, /gateway/stats)
-     |-- Validate x-api-key header against configured keys
-     |-- Reject if required and not provided -> 401/403
-     |
-     v
-[4] Rate Limiting
-     |-- Extract client IP
-     |-- Check sliding window counter
-     |-- Set X-RateLimit-* and Retry-After headers
-     |-- If exceeded -> 429 Too Many Requests
-     |
-     v
-[5] Route Matching
-     |-- Match request path against route prefixes
-     |-- Select highest-priority matching route
-     |-- Verify upstream is healthy
-     |
-     v
-[6] Request Forwarding
-     |-- Strip hop-by-hop headers (Host, Connection)
-     |-- Add X-Forwarded-Proto: https
-     |-- Optionally strip path prefix
-     |-- Forward to upstream with timeout
-     |
-     v
-[7] Response to Client
+```mermaid
+flowchart TD
+    Req([Client Request])
+    Req --> S1["[1] TLS Termination\nPQC handshake, cipher suite negotiation"]
+    S1 --> S2{"[2] PQC Enforcement\nCheck x-tls-cipher-suite header"}
+    S2 -->|"PQC_ONLY + classical cipher"| R403([403 Forbidden])
+    S2 -->|Pass| S3{"[3] Authentication\nJWT / API Key validation"}
+    S3 -->|"Invalid or missing credentials"| R401([401 / 403])
+    S3 -->|Pass| S4{"[4] Rate Limiting\nSliding window per IP"}
+    S4 -->|"Limit exceeded"| R429([429 Too Many Requests])
+    S4 -->|Pass| S5{"[5] Route Matching\nPath prefix + priority"}
+    S5 -->|"No matching route"| R404([404 Not Found])
+    S5 -->|Match| S6["[6] Reverse Proxy\nStrip hop-by-hop headers\nAdd X-Forwarded-Proto\nForward to upstream"]
+    S6 --> S7([" [7] Response to Client"])
 ```
 
 ### TLS Handshake Flow
 
-```
-Client                              QSGW Gateway
-  |                                      |
-  |--- ClientHello (TLS 1.3) ---------->|
-  |    supported_groups:                 |
-  |      x25519_mlkem768,               |
-  |      x25519, secp256r1              |
-  |    signature_algorithms:             |
-  |      mldsa65, ed25519, ecdsa        |
-  |                                      |
-  |                    [Policy Check]    |
-  |                    PQC_ONLY: reject  |
-  |                      if no PQC group |
-  |                    PQC_PREFERRED:    |
-  |                      prefer PQC group|
-  |                    HYBRID: use       |
-  |                      x25519_mlkem768 |
-  |                    CLASSICAL: any    |
-  |                                      |
-  |<-- ServerHello --------------------|
-  |    selected_group: x25519_mlkem768  |
-  |    cipher_suite: AES_256_GCM_SHA384 |
-  |                                      |
-  |<-- EncryptedExtensions ------------|
-  |<-- Certificate (ML-DSA-65) --------|
-  |<-- CertificateVerify --------------|
-  |<-- Finished -------------------------|
-  |                                      |
-  |--- Finished ------------------------>|
-  |                                      |
-  |<====== Encrypted Application Data ====>|
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant G as QSGW Gateway
+
+    C->>G: ClientHello (TLS 1.3)<br/>supported_groups: x25519_mlkem768, x25519, secp256r1<br/>signature_algorithms: mldsa65, ed25519, ecdsa
+
+    Note over G: Policy Check<br/>PQC_ONLY: reject if no PQC group<br/>PQC_PREFERRED: prefer PQC group<br/>HYBRID: use x25519_mlkem768<br/>CLASSICAL: any
+
+    G->>C: ServerHello<br/>selected_group: x25519_mlkem768<br/>cipher_suite: AES_256_GCM_SHA384
+    G->>C: EncryptedExtensions
+    G->>C: Certificate (ML-DSA-65)
+    G->>C: CertificateVerify
+    G->>C: Finished
+
+    C->>G: Finished
+
+    C<<->>G: Encrypted Application Data
 ```
 
 ### Threat Detection Flow
 
-```
-Gateway (per-request)
-     |
-     |-- Extract traffic metadata:
-     |   source_ip, cipher_suite, tls_version,
-     |   request_rate, handshake_duration, user_agent
-     |
-     v
-AI Engine /api/v1/analyze-traffic
-     |
-     |-- Anomaly Detector:
-     |   1. Check for quantum downgrade (weak ciphers, old TLS)
-     |   2. Check for traffic spike (> threshold req/min)
-     |   3. Check for abnormal handshake (> threshold ms)
-     |
-     |-- Returns: is_anomaly, anomaly_type, severity, confidence
-     |
-     v
-AI Engine /api/v1/detect-bot
-     |
-     |-- Bot Detector:
-     |   1. Check user-agent against known bot patterns
-     |   2. Check for missing/short user-agent
-     |   3. Check request rate against threshold
-     |   4. Check path diversity (scanning behavior)
-     |
-     |-- Returns: is_bot, confidence, bot_category
-     |
-     v
-Control Plane (if threat detected)
-     |
-     |-- Store threat_event in PostgreSQL
-     |-- severity, type, source_ip, description, details
+```mermaid
+sequenceDiagram
+    participant GW as Gateway (per-request)
+    participant Anomaly as AI Engine<br/>/api/v1/analyze-traffic
+    participant Bot as AI Engine<br/>/api/v1/detect-bot
+    participant CP as Control Plane
+
+    Note over GW: Extract traffic metadata:<br/>source_ip, cipher_suite, tls_version,<br/>request_rate, handshake_duration, user_agent
+
+    par Anomaly Detection
+        GW->>Anomaly: POST /api/v1/analyze-traffic
+        Note over Anomaly: 1. Check quantum downgrade<br/>2. Check traffic spike<br/>3. Check abnormal handshake
+        Anomaly-->>GW: is_anomaly, anomaly_type,<br/>severity, confidence
+    and Bot Detection
+        GW->>Bot: POST /api/v1/detect-bot
+        Note over Bot: 1. Check user-agent patterns<br/>2. Check missing/short UA<br/>3. Check request rate<br/>4. Check path diversity
+        Bot-->>GW: is_bot, confidence,<br/>bot_category
+    end
+
+    alt Threat detected
+        GW->>CP: Store threat_event
+        Note over CP: Persist in PostgreSQL:<br/>severity, type, source_ip,<br/>description, details
+    end
 ```
 
 ---
@@ -390,55 +338,94 @@ Control Plane (if threat detected)
 
 ### Entity Relationship Diagram
 
-```
-+------------------+       +------------------+       +------------------+
-|    gateways      |       |     routes       |       |    upstreams     |
-+------------------+       +------------------+       +------------------+
-| id (PK, UUID)   |<------| gateway_id (FK)  |------>| id (PK, UUID)   |
-| name (UNIQUE)   |       | upstream_id (FK) |       | name             |
-| hostname        |       | id (PK, UUID)    |       | host             |
-| port            |       | path_prefix      |       | port             |
-| status          |       | methods[]        |       | protocol         |
-| tls_policy      |       | strip_prefix     |       | tls_verify       |
-| tls_cert_path   |       | priority         |       | health_check_path|
-| tls_key_path    |       | tls_policy       |       | health_check_int |
-| max_connections  |       | rate_limit_rps   |       | is_healthy       |
-| metadata (JSONB)|       | enabled          |       | metadata (JSONB) |
-| created_by      |       | created_at       |       | created_at       |
-| created_at      |       | updated_at       |       | updated_at       |
-| updated_at      |       +------------------+       +------------------+
-+------------------+              |
-        |                  UNIQUE(gateway_id,
-        |                  path_prefix)
-        |
-        v
-+------------------+       +------------------+
-|  tls_sessions    |       | threat_events    |
-+------------------+       +------------------+
-| id (PK, UUID)   |       | id (PK, UUID)    |
-| gateway_id (FK) |       | gateway_id (FK)  |
-| client_ip       |       | threat_type      |
-| cipher_suite    |       | severity         |
-| tls_version     |       | source_ip        |
-| kem_algorithm   |       | description      |
-| sig_algorithm   |       | details (JSONB)  |
-| is_pqc          |       | mitigated        |
-| handshake_dur_ms|       | detected_at      |
-| started_at      |       +------------------+
-| ended_at        |
-+------------------+
+```mermaid
+erDiagram
+    gateways {
+        UUID id PK
+        VARCHAR name UK
+        VARCHAR hostname
+        INT port
+        gateway_status status
+        tls_policy tls_policy
+        VARCHAR tls_cert_path
+        VARCHAR tls_key_path
+        INT max_connections
+        JSONB metadata
+        VARCHAR created_by
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
 
-+------------------+
-| qsgw_audit_log   |
-+------------------+
-| id (PK, UUID)   |
-| entity_type     |
-| entity_id       |
-| action          |
-| actor           |
-| details (JSONB) |
-| created_at      |
-+------------------+
+    routes {
+        UUID id PK
+        UUID gateway_id FK
+        UUID upstream_id FK
+        VARCHAR path_prefix
+        TEXT_ARRAY methods
+        BOOLEAN strip_prefix
+        INT priority
+        tls_policy tls_policy
+        INT rate_limit_rps
+        BOOLEAN enabled
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    upstreams {
+        UUID id PK
+        VARCHAR name
+        VARCHAR host
+        INT port
+        route_protocol protocol
+        BOOLEAN tls_verify
+        VARCHAR health_check_path
+        INT health_check_interval
+        BOOLEAN is_healthy
+        JSONB metadata
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    tls_sessions {
+        UUID id PK
+        UUID gateway_id FK
+        VARCHAR client_ip
+        VARCHAR cipher_suite
+        VARCHAR tls_version
+        VARCHAR kem_algorithm
+        VARCHAR sig_algorithm
+        BOOLEAN is_pqc
+        FLOAT handshake_dur_ms
+        TIMESTAMP started_at
+        TIMESTAMP ended_at
+    }
+
+    threat_events {
+        UUID id PK
+        UUID gateway_id FK
+        threat_type threat_type
+        threat_severity severity
+        VARCHAR source_ip
+        TEXT description
+        JSONB details
+        BOOLEAN mitigated
+        TIMESTAMP detected_at
+    }
+
+    qsgw_audit_log {
+        UUID id PK
+        VARCHAR entity_type
+        UUID entity_id
+        VARCHAR action
+        VARCHAR actor
+        JSONB details
+        TIMESTAMP created_at
+    }
+
+    gateways ||--o{ routes : "has"
+    gateways ||--o{ tls_sessions : "records"
+    gateways ||--o{ threat_events : "generates"
+    upstreams ||--o{ routes : "serves"
 ```
 
 ### Enum Types

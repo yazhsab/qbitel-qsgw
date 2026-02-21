@@ -1,0 +1,50 @@
+---
+const githubUrl = 'https://github.com/yazhsab/qbitel-qsgw';
+---
+
+<section class="py-24 px-6 relative overflow-hidden">
+  <!-- Background gradient -->
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-brand-950/20 to-transparent"></div>
+
+  <div class="max-w-4xl mx-auto text-center relative z-10">
+    <div data-animate>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+        Built in the <span class="gradient-text bg-gradient-to-r from-brand-300 to-orange-400">Open</span>
+      </h2>
+      <p class="text-lg text-[var(--color-text-muted)] max-w-2xl mx-auto mb-10 leading-relaxed">
+        QSGW is open source under Apache 2.0. Whether you're a Rust developer, DevOps engineer, or security professional — there's a place for you here.
+      </p>
+    </div>
+
+    <!-- Steps -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12" data-animate>
+      <div class="glass-card p-6 text-center stagger-1" data-animate>
+        <div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-300 flex items-center justify-center mx-auto mb-3 font-bold">1</div>
+        <h3 class="font-semibold text-white mb-1">Fork & Clone</h3>
+        <p class="text-sm text-[var(--color-text-muted)]">Fork the repo and set up your local environment</p>
+      </div>
+      <div class="glass-card p-6 text-center stagger-2" data-animate>
+        <div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-300 flex items-center justify-center mx-auto mb-3 font-bold">2</div>
+        <h3 class="font-semibold text-white mb-1">Make Changes</h3>
+        <p class="text-sm text-[var(--color-text-muted)]">Pick an issue, create a branch, and write your code</p>
+      </div>
+      <div class="glass-card p-6 text-center stagger-3" data-animate>
+        <div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-300 flex items-center justify-center mx-auto mb-3 font-bold">3</div>
+        <h3 class="font-semibold text-white mb-1">Submit PR</h3>
+        <p class="text-sm text-[var(--color-text-muted)]">Run tests, push, and open a pull request</p>
+      </div>
+    </div>
+
+    <!-- CTA Buttons -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4" data-animate>
+      <a href={`${githubUrl}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener noreferrer"
+        class="px-8 py-3.5 rounded-xl font-semibold text-white bg-brand-500 hover:bg-brand-600 transition-all duration-300 hover:shadow-lg hover:shadow-brand-500/25">
+        Read Contributing Guide
+      </a>
+      <a href={`${githubUrl}/issues`} target="_blank" rel="noopener noreferrer"
+        class="px-8 py-3.5 rounded-xl font-semibold text-white border border-white/20 hover:bg-white/5 transition-all duration-300">
+        Browse Open Issues
+      </a>
+    </div>
+  </div>
+</section>

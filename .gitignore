@@ -1,0 +1,71 @@
+# === Rust ===
+/target/
+**/target/
+**/*.rs.bk
+*.rlib
+
+# === Go ===
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# === Node / JavaScript ===
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.pnpm-debug.log*
+npm-debug.log*
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.egg
+
+# === Astro ===
+.astro/
+
+# === Docker ===
+*.log
+docker-compose.override.yml
+
+# === Environment / Secrets ===
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+
+# === IDE / Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# === OS ===
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini

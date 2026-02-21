@@ -18,7 +18,7 @@ Thank you for your interest in contributing to the Quantum-Safe Gateway. QSGW is
 
 ## Code of Conduct
 
-This project follows the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating, you are expected to uphold this code. Please report unacceptable behavior to [conduct@quantun.dev](mailto:conduct@quantun.dev).
+This project follows the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating, you are expected to uphold this code. Please report unacceptable behavior to [conduct@qbitel.dev](mailto:conduct@qbitel.dev).
 
 ---
 
@@ -62,12 +62,12 @@ For small documentation fixes, feel free to open a pull request directly. For la
 
 ### 1. Fork the Repository
 
-Fork the [QSGW repository](https://github.com/quantun/qsgw) on GitHub and clone your fork locally:
+Fork the [QSGW repository](https://github.com/yazhsab/qbitel-qsgw) on GitHub and clone your fork locally:
 
 ```bash
-git clone https://github.com/<your-username>/qsgw.git
-cd qsgw
-git remote add upstream https://github.com/quantun/qsgw.git
+git clone https://github.com/<your-username>/qbitel-qsgw.git
+cd qbitel-qsgw
+git remote add upstream https://github.com/yazhsab/qbitel-qsgw.git
 ```
 
 ### 2. Create a Branch
@@ -284,6 +284,6 @@ QSGW follows [Semantic Versioning](https://semver.org/):
 - **Documentation:** Start with the [docs/](docs/) directory for architecture, API, deployment, and development guides.
 - **GitHub Issues:** Search existing issues or open a new one.
 - **Discussions:** Use GitHub Discussions for questions and general conversation.
-- **Email:** Reach the maintainers at [oss@quantun.dev](mailto:oss@quantun.dev).
+- **Email:** Reach the maintainers at [oss@qbitel.dev](mailto:oss@qbitel.dev).
 
 We appreciate your contributions and look forward to building a quantum-safe future together.

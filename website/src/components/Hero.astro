@@ -1,0 +1,160 @@
+---
+import GradientBlob from './GradientBlob.astro';
+const healthResponse = '{"status":"ok"}';
+---
+
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+  <!-- Layered backgrounds -->
+  <div class="absolute inset-0 mesh-gradient"></div>
+  <div class="cyber-grid"></div>
+  <div class="dot-grid"></div>
+
+  <!-- Animated blobs -->
+  <GradientBlob size={700} color="rgba(255, 56, 96, 0.12)" top="-15%" left="-10%" />
+  <GradientBlob size={500} color="rgba(255, 107, 138, 0.1)" top="55%" left="75%" delay="2s" />
+  <GradientBlob size={400} color="rgba(26, 26, 46, 0.3)" top="25%" left="45%" delay="4s" />
+
+  <!-- Orbit rings -->
+  <div class="orbit-ring" style="width: 600px; height: 600px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 25s;"></div>
+  <div class="orbit-ring" style="width: 900px; height: 900px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 40s; animation-direction: reverse; border-color: rgba(255, 107, 138, 0.05);"></div>
+
+  <!-- Top glow -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-500/[0.07] rounded-full blur-[120px]"></div>
+
+  <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-sm font-medium mb-8 badge-glow">
+      <span class="w-2 h-2 rounded-full bg-brand-400 animate-pulse"></span>
+      Enterprise-Grade Open Source
+    </div>
+
+    <!-- Headline -->
+    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] mb-6 stagger-1" data-animate>
+      Your API Gateway, Now <span class="gradient-text-glow bg-gradient-to-r from-rose-400 via-red-400 to-orange-400">Quantum-Safe</span>
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="text-lg md:text-xl text-[var(--color-text-muted)] max-w-3xl mx-auto mb-10 leading-relaxed stagger-2" data-animate>
+      Drop-in replacement for Kong and Apigee with native post-quantum TLS, AI-powered threat detection, and configurable security policies. Built in Rust for maximum performance.
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 stagger-3" data-animate>
+      <a href="#quickstart" class="btn-primary px-8 py-3.5 rounded-xl font-semibold text-white">
+        Get Started
+      </a>
+      <a href="https://github.com/yazhsab/qbitel-qsgw" target="_blank" rel="noopener noreferrer"
+        class="btn-outline flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-white">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+
+    <!-- Tech Badges (marquee-style) -->
+    <div class="flex flex-wrap items-center justify-center gap-3 mb-12 stagger-4" data-animate>
+      <span class="px-3 py-1 rounded-full bg-brand-500/[0.06] border border-brand-500/15 text-xs text-brand-300/70 font-mono">Rust 1.75+</span>
+      <span class="px-3 py-1 rounded-full bg-brand-500/[0.06] border border-brand-500/15 text-xs text-brand-300/70 font-mono">Go 1.23</span>
+      <span class="px-3 py-1 rounded-full bg-brand-500/[0.06] border border-brand-500/15 text-xs text-brand-300/70 font-mono">Python 3.11+</span>
+      <span class="px-3 py-1 rounded-full bg-brand-500/[0.06] border border-brand-500/15 text-xs text-brand-300/70 font-mono">React 19</span>
+      <span class="px-3 py-1 rounded-full bg-brand-500/[0.06] border border-brand-500/15 text-xs text-brand-300/70 font-mono">NIST FIPS</span>
+      <span class="px-3 py-1 rounded-full bg-brand-500/[0.06] border border-brand-500/15 text-xs text-brand-300/70 font-mono">Apache 2.0</span>
+    </div>
+
+    <!-- Code Preview (with scan line) -->
+    <div class="max-w-2xl mx-auto stagger-5" data-animate>
+      <div class="glass-card overflow-hidden terminal-card" style="animation: glow-pulse 4s ease-in-out infinite;">
+        <div class="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-white/[0.02]">
+          <div class="flex gap-1.5">
+            <div class="w-3 h-3 rounded-full bg-red-500/60"></div>
+            <div class="w-3 h-3 rounded-full bg-yellow-500/60"></div>
+            <div class="w-3 h-3 rounded-full bg-green-500/60"></div>
+          </div>
+          <span class="text-xs text-[var(--color-text-muted)] ml-2 font-mono">terminal</span>
+          <div class="ml-auto flex items-center gap-1.5">
+            <div class="w-1.5 h-1.5 rounded-full bg-green-400/60 animate-pulse"></div>
+            <span class="text-[10px] text-green-400/60 font-mono">live</span>
+          </div>
+        </div>
+        <div class="p-4 font-mono text-sm text-left">
+          <div class="text-[var(--color-text-muted)]">
+            <span class="text-brand-400">$</span> git clone https://github.com/yazhsab/qbitel-qsgw.git && cd qbitel-qsgw
+          </div>
+          <div class="text-[var(--color-text-muted)]">
+            <span class="text-brand-400">$</span> make docker-all
+          </div>
+          <div class="text-[var(--color-text-muted)]">
+            <span class="text-brand-400">$</span> curl http://localhost:8085/health
+          </div>
+          <div class="mt-2 text-green-400/70" set:html={healthResponse} />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2">
+    <div class="w-5 h-8 rounded-full border border-white/20 flex justify-center pt-1.5">
+      <div class="w-1 h-2 rounded-full bg-brand-400/60 animate-bounce"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Particle canvas -->
+<script>
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.4';
+  document.body.prepend(canvas);
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const PARTICLE_COUNT = 60;
+  const MAX_DIST = 150;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of particles) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 56, 96, 0.5)';
+      ctx.fill();
+    }
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MAX_DIST) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(255, 56, 96, ${0.15 * (1 - dist / MAX_DIST)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>

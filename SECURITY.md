@@ -30,7 +30,7 @@ Security patches are provided for the latest minor release. We recommend always 
 
 If you discover a security vulnerability in QSGW, please report it responsibly by emailing:
 
-**[security@quantun.dev](mailto:security@quantun.dev)**
+**[security@qbitel.dev](mailto:security@qbitel.dev)**
 
 ### What to Include
 
@@ -42,7 +42,7 @@ If you discover a security vulnerability in QSGW, please report it responsibly b
 
 ### Encryption
 
-If the vulnerability involves sensitive information, you may encrypt your report using our PGP key, which is available at [https://quantun.dev/.well-known/pgp-key.txt](https://quantun.dev/.well-known/pgp-key.txt).
+If the vulnerability involves sensitive information, you may encrypt your report using our PGP key, which is available at [https://qbitel.dev/.well-known/pgp-key.txt](https://qbitel.dev/.well-known/pgp-key.txt).
 
 ---
 
@@ -177,7 +177,7 @@ row := pool.QueryRow(ctx, "SELECT * FROM gateways WHERE id = $1", id)
 
 We ask that security researchers follow responsible disclosure practices:
 
-1. **Report privately:** Send vulnerability reports to [security@quantun.dev](mailto:security@quantun.dev), not to public issue trackers.
+1. **Report privately:** Send vulnerability reports to [security@qbitel.dev](mailto:security@qbitel.dev), not to public issue trackers.
 2. **Allow time for a fix:** Give us a reasonable amount of time to address the vulnerability before public disclosure. We target 14 days for a patch release.
 3. **Do not exploit:** Do not access, modify, or delete data belonging to other users while researching vulnerabilities.
 4. **Minimize impact:** Make a good-faith effort to avoid disrupting production systems during testing.
@@ -200,5 +200,5 @@ We will not pursue legal action against security researchers who:
 
 For security-related inquiries:
 
-- **Email:** [security@quantun.dev](mailto:security@quantun.dev)
-- **PGP Key:** [https://quantun.dev/.well-known/pgp-key.txt](https://quantun.dev/.well-known/pgp-key.txt)
+- **Email:** [security@qbitel.dev](mailto:security@qbitel.dev)
+- **PGP Key:** [https://qbitel.dev/.well-known/pgp-key.txt](https://qbitel.dev/.well-known/pgp-key.txt)

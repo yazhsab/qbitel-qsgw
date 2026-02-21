@@ -1,0 +1,68 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+const features = [
+  { name: 'Post-Quantum TLS', qsgw: true, kong: false, apigee: false, envoy: false, nginx: false },
+  { name: 'Hybrid PQC + Classical', qsgw: true, kong: false, apigee: false, envoy: false, nginx: false },
+  { name: 'Quantum Downgrade Detection', qsgw: true, kong: false, apigee: false, envoy: false, nginx: false },
+  { name: 'AI Threat Detection', qsgw: true, kong: 'plugin', apigee: 'plugin', envoy: false, nginx: false },
+  { name: 'TLS Migration Policies', qsgw: true, kong: false, apigee: false, envoy: false, nginx: false },
+  { name: 'Reverse Proxy', qsgw: true, kong: true, apigee: true, envoy: true, nginx: true },
+  { name: 'Rate Limiting', qsgw: true, kong: true, apigee: true, envoy: true, nginx: true },
+  { name: 'JWT Auth', qsgw: true, kong: true, apigee: true, envoy: true, nginx: 'plugin' },
+  { name: 'Admin Dashboard', qsgw: true, kong: true, apigee: true, envoy: false, nginx: false },
+  { name: 'Built in Rust', qsgw: true, kong: 'lua', apigee: 'java', envoy: 'cpp', nginx: 'c' },
+  { name: 'Open Source', qsgw: true, kong: 'partial', apigee: false, envoy: true, nginx: true },
+];
+
+function renderCell(value: boolean | string) {
+  if (value === true) return '✅';
+  if (value === false) return '❌';
+  if (value === 'plugin') return '⚠️ plugin';
+  if (value === 'partial') return '⚠️ partial';
+  if (value === 'lua') return '❌ Lua/Go';
+  if (value === 'java') return '❌ Java';
+  if (value === 'cpp') return '❌ C++';
+  if (value === 'c') return '❌ C';
+  return value;
+}
+---
+
+<section class="py-24 px-6 relative">
+  <div class="max-w-5xl mx-auto">
+    <SectionHeading
+      id="comparison"
+      title="QSGW vs. Traditional Gateways"
+      subtitle="The only API gateway with post-quantum TLS and AI threat detection built into the core"
+    />
+
+    <div class="glass-card overflow-hidden" data-animate>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="text-left p-4 text-[var(--color-text-muted)] font-medium">Feature</th>
+              <th class="p-4 text-center font-bold text-brand-400">QSGW</th>
+              <th class="p-4 text-center text-[var(--color-text-muted)] font-medium">Kong</th>
+              <th class="p-4 text-center text-[var(--color-text-muted)] font-medium">Apigee</th>
+              <th class="p-4 text-center text-[var(--color-text-muted)] font-medium">Envoy</th>
+              <th class="p-4 text-center text-[var(--color-text-muted)] font-medium">Nginx</th>
+            </tr>
+          </thead>
+          <tbody>
+            {features.map((f, i) => (
+              <tr class={`border-b border-white/5 ${i % 2 === 0 ? 'bg-white/[0.01]' : ''}`}>
+                <td class="p-4 text-white font-medium">{f.name}</td>
+                <td class="p-4 text-center text-lg">{renderCell(f.qsgw)}</td>
+                <td class="p-4 text-center text-lg">{renderCell(f.kong)}</td>
+                <td class="p-4 text-center text-lg">{renderCell(f.apigee)}</td>
+                <td class="p-4 text-center text-lg">{renderCell(f.envoy)}</td>
+                <td class="p-4 text-center text-lg">{renderCell(f.nginx)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

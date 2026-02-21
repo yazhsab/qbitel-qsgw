@@ -22,22 +22,17 @@ The QSGW threat detection system operates as a dedicated AI engine (Python, Fast
 
 **Architecture:**
 
-```
-Client Connection
-       |
-       v
-  [Rust Gateway]  --- TLS session metadata --->  [AI Engine]
-       |                                              |
-       v                                              v
-  [Proxy traffic]                              [Anomaly Detector]
-                                               [Bot Detector]
-                                                      |
-                                                      v
-                                              [Threat Events]
-                                                      |
-                                                      v
-                                            [Control Plane DB]
-                                            [Admin Dashboard]
+```mermaid
+flowchart LR
+    Client([Client\nConnection]) --> GW["Rust Gateway"]
+    GW -->|"TLS session metadata"| AI["AI Engine"]
+    GW -->|"Proxy traffic"| Upstream["Upstream\nServices"]
+    AI --> AnomalyD["Anomaly\nDetector"]
+    AI --> BotD["Bot\nDetector"]
+    AnomalyD --> TE["Threat Events"]
+    BotD --> TE
+    TE --> CP["Control Plane\nPostgreSQL"]
+    TE --> Dash["Admin\nDashboard"]
 ```
 
 **Key properties:**
@@ -134,6 +129,15 @@ The anomaly detector produces a composite anomaly score between 0.0 (normal) and
 | Error risk          | 0.15   | Elevated error rate penalty              |
 | Handshake risk      | 0.10   | Unusual handshake duration penalty       |
 
+```mermaid
+pie title Anomaly Scoring Weights
+    "Cipher risk" : 0.35
+    "TLS version risk" : 0.20
+    "Rate risk" : 0.20
+    "Error risk" : 0.15
+    "Handshake risk" : 0.10
+```
+
 **Threshold configuration:**
 
 | Parameter                      | Default | Description                        |
@@ -214,6 +218,14 @@ The bot detector produces a composite score between 0.0 (human) and 1.0 (bot):
 | Request rate     | 0.35   | Requests per minute relative to baseline |
 | Path diversity   | 0.25   | Unique path count relative to session    |
 | Response timing  | 0.10   | Below-human response processing time     |
+
+```mermaid
+pie title Bot Scoring Weights
+    "User-agent" : 0.30
+    "Request rate" : 0.35
+    "Path diversity" : 0.25
+    "Response timing" : 0.10
+```
 
 **Threshold configuration:**
 
@@ -316,23 +328,13 @@ When a threat event is detected, it is persisted in the `threat_events` table an
 
 ### Mitigation Workflow
 
-```
-1. Threat detected by AI engine
-   |
-   v
-2. Threat event created (mitigated=false)
-   |
-   v
-3. Operator reviews threat in dashboard or via API
-   |
-   v
-4. Operator calls POST /api/v1/threats/{id}/mitigate
-   |
-   v
-5. Threat marked as mitigated (mitigated=true, mitigated_at=timestamp)
-   |
-   v
-6. Countermeasures applied (IP block, rate limit adjustment, etc.)
+```mermaid
+flowchart TD
+    A["1. Threat Detected\nby AI Engine"] --> B["2. Threat Event Created\nmitigated = false"]
+    B --> C["3. Operator Reviews\nin Dashboard or via API"]
+    C --> D["4. API Call\nPOST /api/v1/threats/id/mitigate"]
+    D --> E["5. Threat Marked Mitigated\nmitigated = true\nmitigated_at = timestamp"]
+    E --> F["6. Countermeasures Applied\nIP block, rate limit adjustment, etc."]
 ```
 
 ### API Mitigation

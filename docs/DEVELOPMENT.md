@@ -49,8 +49,8 @@ docker compose version # 2.20 or later
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/quantun/qsgw.git
-cd qsgw
+git clone https://github.com/yazhsab/qbitel-qsgw.git
+cd qbitel-qsgw
 ```
 
 ### Step 2: Start Infrastructure Services

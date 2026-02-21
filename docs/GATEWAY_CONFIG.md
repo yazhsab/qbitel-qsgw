@@ -107,6 +107,33 @@ The gateway allows classical TLS cipher suites alongside PQC suites. PQC suites 
 
 **Considerations:** This policy maximizes compatibility at the cost of reduced quantum protection. Classical-only connections will trigger `QUANTUM_DOWNGRADE` threat events in the AI threat detection system. Use this policy only during migration periods.
 
+### TLS Policy Decision Tree
+
+The following diagram illustrates how the gateway selects the negotiation strategy based on client capabilities and the configured TLS policy:
+
+```mermaid
+flowchart TD
+    Start{{"Does client support PQC?"}}
+    Start -->|Yes| PQCPolicy{"Does policy require PQC?"}
+    Start -->|No| Hybrid{"Does policy allow hybrid?"}
+
+    PQCPolicy -->|"PQC_ONLY"| PQCOnly["Negotiate pure PQC\nML-KEM / ML-DSA"]
+    PQCPolicy -->|"PQC_PREFERRED"| PQCPref["Negotiate PQC\n(hybrid fallback available)"]
+    PQCPolicy -->|"HYBRID"| HybridNeg["Negotiate hybrid\nX25519 + ML-KEM-768"]
+    PQCPolicy -->|"CLASSICAL_ALLOWED"| ClassicalAllow["Negotiate PQC preferred\nclassical permitted"]
+
+    Hybrid -->|"PQC_ONLY"| Reject(["Reject connection\n403 Forbidden"])
+    Hybrid -->|"PQC_PREFERRED"| HybridFallback{"Client supports hybrid?"}
+    Hybrid -->|"HYBRID"| HybridCheck{"Client supports hybrid?"}
+    Hybrid -->|"CLASSICAL_ALLOWED"| Classical["Allow classical\nTLS 1.2+ permitted"]
+
+    HybridFallback -->|Yes| HybridNeg2["Negotiate hybrid\nX25519 + ML-KEM-768"]
+    HybridFallback -->|No| Reject2(["Reject connection"])
+
+    HybridCheck -->|Yes| HybridNeg3["Negotiate hybrid\nX25519 + ML-KEM-768"]
+    HybridCheck -->|No| Reject3(["Reject connection"])
+```
+
 ---
 
 ## Cipher Suite Selection
@@ -290,32 +317,21 @@ When the limit is exceeded, the gateway returns `429 Too Many Requests` with a `
 
 Every request processed by the gateway passes through the following middleware stages in order:
 
-```
-Client Request
-  |
-  v
-[1] TLS Termination      -- PQC/hybrid/classical TLS handshake
-  |
-  v
-[2] Authentication        -- JWT or API key validation
-  |
-  v
-[3] Rate Limiting         -- Per-IP and per-route rate checks
-  |
-  v
-[4] PQC Enforcement       -- TLS policy compliance check; threat generation
-  |
-  v
-[5] Route Matching        -- Path-prefix + priority + method matching
-  |
-  v
-[6] Proxy                 -- Forward to upstream, connection pooling
-  |
-  v
-[7] Response Headers      -- Security headers (HSTS, CSP, X-Frame-Options)
-  |
-  v
-Client Response
+```mermaid
+flowchart TD
+    Req([Client Request])
+    Req --> S1["[1] TLS Termination\nPQC / hybrid / classical TLS handshake"]
+    S1 --> S2{"[2] Authentication\nJWT or API key validation"}
+    S2 -->|"Unauthorized"| E401([401 Unauthorized])
+    S2 -->|Pass| S3{"[3] Rate Limiting\nPer-IP and per-route rate checks"}
+    S3 -->|"Limit exceeded"| E429([429 Too Many Requests])
+    S3 -->|Pass| S4{"[4] PQC Enforcement\nTLS policy compliance check"}
+    S4 -->|"Non-compliant cipher"| E403([403 Forbidden + Threat Event])
+    S4 -->|Pass| S5{"[5] Route Matching\nPath-prefix + priority + method"}
+    S5 -->|"No match"| E404([404 Not Found])
+    S5 -->|Match| S6["[6] Proxy\nForward to upstream, connection pooling"]
+    S6 --> S7["[7] Response Headers\nHSTS, CSP, X-Frame-Options"]
+    S7 --> Res([Client Response])
 ```
 
 ### Stage Details

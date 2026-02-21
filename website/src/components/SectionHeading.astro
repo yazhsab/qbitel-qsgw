@@ -1,0 +1,14 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  id: string;
+}
+
+const { title, subtitle, id } = Astro.props;
+---
+
+<div class="text-center mb-16" data-animate>
+  <h2 id={id} class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 scroll-mt-24">{title}</h2>
+  {subtitle && <p class="text-lg text-[var(--color-text-muted)] max-w-2xl mx-auto leading-relaxed">{subtitle}</p>}
+</div>

@@ -27,7 +27,7 @@ version: "3.9"
 
 services:
   gateway:
-    image: quantun/qsgw-gateway:0.1.0
+    image: qbitel/qsgw-gateway:0.1.0
     ports:
       - "8443:8443"
     environment:
@@ -59,7 +59,7 @@ services:
       - qsgw-internal
 
   control-plane:
-    image: quantun/qsgw-control-plane:0.1.0
+    image: qbitel/qsgw-control-plane:0.1.0
     ports:
       - "8085:8085"
     environment:
@@ -96,7 +96,7 @@ services:
       - qsgw-internal
 
   ai-engine:
-    image: quantun/qsgw-ai-engine:0.1.0
+    image: qbitel/qsgw-ai-engine:0.1.0
     ports:
       - "8086:8086"
     environment:
@@ -125,7 +125,7 @@ services:
       - qsgw-internal
 
   admin:
-    image: quantun/qsgw-admin:0.1.0
+    image: qbitel/qsgw-admin:0.1.0
     ports:
       - "3003:3003"
     environment:
@@ -501,14 +501,23 @@ Expose Prometheus-compatible metrics by setting `QSGW_METRICS_ENABLED=true`:
 
 Deploy multiple gateway instances behind a Layer 4 (TCP) load balancer for high availability and horizontal scaling.
 
-```
-              [L4 Load Balancer]
-              /        |        \
-        [Gateway 1] [Gateway 2] [Gateway 3]
-              \        |        /
-           [Control Plane Cluster]
-                      |
-               [PostgreSQL HA]
+```mermaid
+flowchart TD
+    LB["L4 Load Balancer"]
+    LB --> GW1["Gateway 1"]
+    LB --> GW2["Gateway 2"]
+    LB --> GW3["Gateway 3"]
+
+    GW1 --> CP["Control Plane Cluster"]
+    GW2 --> CP
+    GW3 --> CP
+
+    GW1 --> etcd[("etcd Cluster\n3+ nodes")]
+    GW2 --> etcd
+    GW3 --> etcd
+
+    CP --> PG[("PostgreSQL HA\nPrimary + Replicas")]
+    CP --> etcd
 ```
 
 Each gateway instance connects to the same control plane and etcd cluster. Route configuration is synchronized through etcd watches.
@@ -559,7 +568,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: quantun/qsgw-gateway:0.1.0
+          image: qbitel/qsgw-gateway:0.1.0
           ports:
             - containerPort: 8443
               protocol: TCP
@@ -623,7 +632,7 @@ spec:
     spec:
       containers:
         - name: control-plane
-          image: quantun/qsgw-control-plane:0.1.0
+          image: qbitel/qsgw-control-plane:0.1.0
           ports:
             - containerPort: 8085
           envFrom:
@@ -689,7 +698,7 @@ spec:
     spec:
       containers:
         - name: ai-engine
-          image: quantun/qsgw-ai-engine:0.1.0
+          image: qbitel/qsgw-ai-engine:0.1.0
           ports:
             - containerPort: 8086
           envFrom:
@@ -753,7 +762,7 @@ spec:
     spec:
       containers:
         - name: admin
-          image: quantun/qsgw-admin:0.1.0
+          image: qbitel/qsgw-admin:0.1.0
           ports:
             - containerPort: 3003
           envFrom:

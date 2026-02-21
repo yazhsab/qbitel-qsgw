@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Features from '../components/Features.astro';
+import ThreatDetection from '../components/ThreatDetection.astro';
+import Architecture from '../components/Architecture.astro';
+import QuickStart from '../components/QuickStart.astro';
+import Comparison from '../components/Comparison.astro';
+import Docs from '../components/Docs.astro';
+import Community from '../components/Community.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout
+  title="QSGW — Quantum-Safe API Gateway | Enterprise-Grade Open Source"
+  description="Drop-in replacement for Kong and Apigee with native post-quantum TLS, AI-powered threat detection, and configurable security policies. Built in Rust for maximum performance."
+>
+  <Header />
+  <main>
+    <Hero />
+    <Features />
+    <ThreatDetection />
+    <Architecture />
+    <QuickStart />
+    <Comparison />
+    <Docs />
+    <Community />
+  </main>
+  <Footer />
+</BaseLayout>

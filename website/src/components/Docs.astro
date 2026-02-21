@@ -1,0 +1,40 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+const docs = [
+  { icon: '🏗️', title: 'Architecture', desc: 'System design, data flow, and tech decisions', href: 'https://github.com/yazhsab/qbitel-qsgw/blob/main/docs/ARCHITECTURE.md' },
+  { icon: '📡', title: 'API Reference', desc: 'Complete REST API with examples', href: 'https://github.com/yazhsab/qbitel-qsgw/blob/main/docs/API.md' },
+  { icon: '⚙️', title: 'Gateway Configuration', desc: 'TLS policies, routing, and proxy settings', href: 'https://github.com/yazhsab/qbitel-qsgw/blob/main/docs/GATEWAY.md' },
+  { icon: '🚀', title: 'Deployment Guide', desc: 'Docker, Kubernetes, and production ops', href: 'https://github.com/yazhsab/qbitel-qsgw/blob/main/docs/DEPLOYMENT.md' },
+  { icon: '🔨', title: 'Development Guide', desc: 'Local setup, coding standards, debugging', href: 'https://github.com/yazhsab/qbitel-qsgw/blob/main/docs/DEVELOPMENT.md' },
+  { icon: '🛡️', title: 'Threat Detection', desc: 'AI engine configuration and threat categories', href: 'https://github.com/yazhsab/qbitel-qsgw/blob/main/docs/THREATS.md' },
+  { icon: '🤝', title: 'Contributing', desc: 'How to contribute to QSGW', href: 'https://github.com/yazhsab/qbitel-qsgw/blob/main/CONTRIBUTING.md' },
+  { icon: '🔒', title: 'Security Policy', desc: 'Vulnerability reporting and security info', href: 'https://github.com/yazhsab/qbitel-qsgw/blob/main/SECURITY.md' },
+];
+---
+
+<section class="py-24 px-6 relative">
+  <div class="max-w-5xl mx-auto">
+    <SectionHeading
+      id="docs"
+      title="Documentation"
+      subtitle="Everything you need to deploy, configure, and contribute"
+    />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {docs.map((doc, i) => (
+        <a href={doc.href} target="_blank" rel="noopener noreferrer"
+          class={`glass-card-hover p-5 flex items-start gap-4 group stagger-${i + 1}`} data-animate>
+          <span class="text-2xl flex-shrink-0">{doc.icon}</span>
+          <div class="flex-1 min-w-0">
+            <h3 class="font-semibold text-white mb-1 group-hover:text-brand-300 transition-colors">{doc.title}</h3>
+            <p class="text-sm text-[var(--color-text-muted)]">{doc.desc}</p>
+          </div>
+          <svg class="w-5 h-5 text-[var(--color-text-muted)] group-hover:text-brand-400 transition-all group-hover:translate-x-1 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

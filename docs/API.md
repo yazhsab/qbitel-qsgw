@@ -855,6 +855,40 @@ The `Retry-After` HTTP header is also included in the response.
 
 The following demonstrates a full workflow: creating a gateway, upstream, and route, then checking for threats.
 
+```mermaid
+sequenceDiagram
+    participant Op as Operator
+    participant CP as Control Plane<br/>:8085
+    participant GW as Gateway<br/>:8443
+    participant DB as PostgreSQL
+
+    Op->>CP: POST /api/v1/gateways<br/>(name, hostname, port, tls_policy)
+    CP->>DB: INSERT gateway
+    DB-->>CP: gateway record
+    CP-->>Op: 201 Created (gateway_id)
+
+    Op->>CP: POST /api/v1/gateways/{id}/activate
+    CP->>DB: UPDATE status = ACTIVE
+    CP-->>Op: 200 OK (status: active)
+
+    Op->>CP: POST /api/v1/upstreams<br/>(name, host, port, protocol)
+    CP->>DB: INSERT upstream
+    DB-->>CP: upstream record
+    CP-->>Op: 201 Created (upstream_id)
+
+    Op->>CP: POST /api/v1/routes<br/>(gateway_id, upstream_id, path_prefix)
+    CP->>DB: INSERT route
+    DB-->>CP: route record
+    CP-->>Op: 201 Created (route_id)
+
+    Note over GW: Gateway is now active,<br/>routing traffic to upstream
+
+    Op->>CP: GET /api/v1/threats?gateway_id={id}
+    CP->>DB: SELECT threat_events
+    DB-->>CP: threat records
+    CP-->>Op: 200 OK (threat list)
+```
+
 ```bash
 # 1. Create a gateway
 curl -X POST http://localhost:8085/api/v1/gateways \

@@ -1,0 +1,97 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+const threats = [
+  {
+    severity: 'CRITICAL',
+    color: 'red',
+    bgColor: 'bg-red-500/10',
+    borderColor: 'border-red-500/30',
+    textColor: 'text-red-400',
+    badgeBg: 'bg-red-500/20',
+    icon: '🔴',
+    name: 'QUANTUM_DOWNGRADE',
+    description: 'Attempts to force classical cipher suites',
+  },
+  {
+    severity: 'HIGH',
+    color: 'orange',
+    bgColor: 'bg-orange-500/10',
+    borderColor: 'border-orange-500/30',
+    textColor: 'text-orange-400',
+    badgeBg: 'bg-orange-500/20',
+    icon: '🟠',
+    name: 'WEAK_CIPHER',
+    description: 'Deprecated cipher suites (RC4, DES, 3DES)',
+  },
+  {
+    severity: 'HIGH',
+    color: 'orange',
+    bgColor: 'bg-orange-500/10',
+    borderColor: 'border-orange-500/30',
+    textColor: 'text-orange-400',
+    badgeBg: 'bg-orange-500/20',
+    icon: '🟠',
+    name: 'BOT_ATTACK',
+    description: 'Automated traffic and endpoint probing',
+  },
+  {
+    severity: 'HIGH',
+    color: 'orange',
+    bgColor: 'bg-orange-500/10',
+    borderColor: 'border-orange-500/30',
+    textColor: 'text-orange-400',
+    badgeBg: 'bg-orange-500/20',
+    icon: '🟠',
+    name: 'REPLAY_ATTACK',
+    description: 'Replayed TLS sessions detected',
+  },
+  {
+    severity: 'MEDIUM',
+    color: 'yellow',
+    bgColor: 'bg-yellow-500/10',
+    borderColor: 'border-yellow-500/30',
+    textColor: 'text-yellow-400',
+    badgeBg: 'bg-yellow-500/20',
+    icon: '🟡',
+    name: 'ANOMALOUS_TRAFFIC',
+    description: 'Unusual patterns and rate spikes',
+  },
+  {
+    severity: 'MEDIUM',
+    color: 'yellow',
+    bgColor: 'bg-yellow-500/10',
+    borderColor: 'border-yellow-500/30',
+    textColor: 'text-yellow-400',
+    badgeBg: 'bg-yellow-500/20',
+    icon: '🟡',
+    name: 'CERTIFICATE_ISSUE',
+    description: 'Invalid or expired certificates',
+  },
+];
+---
+
+<section class="py-24 px-6 relative">
+  <div class="max-w-7xl mx-auto">
+    <SectionHeading
+      id="threats"
+      title="AI-Powered Threat Detection"
+      subtitle="Six threat categories detected and classified in real time"
+    />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {threats.map((threat, i) => (
+        <div class={`glass-card-hover p-6 md:p-8 stagger-${i + 1}`} data-animate>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">{threat.icon}</span>
+            <span class={`px-2.5 py-0.5 rounded-full text-xs font-bold ${threat.badgeBg} ${threat.textColor}`}>
+              {threat.severity}
+            </span>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2 font-mono">{threat.name}</h3>
+          <p class="text-[var(--color-text-muted)] leading-relaxed text-sm">{threat.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

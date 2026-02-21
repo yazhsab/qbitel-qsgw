@@ -1,0 +1,58 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import FeatureCard from './FeatureCard.astro';
+
+const features = [
+  {
+    icon: '🔒',
+    title: 'Post-Quantum TLS',
+    description: 'FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), FIPS 205 (SLH-DSA) with hybrid X25519 + ML-KEM-768. Four configurable TLS policies to match your migration timeline.',
+  },
+  {
+    icon: '🚀',
+    title: 'Blazing Fast Rust Engine',
+    description: 'Axum + Tokio-powered data plane. Async I/O, zero-copy forwarding, 10,000+ concurrent connections with sub-millisecond per-request overhead.',
+  },
+  {
+    icon: '🤖',
+    title: 'AI-Powered Threat Detection',
+    description: 'Real-time anomaly detection catches quantum downgrade attacks, bot traffic, weak ciphers, replay attacks, and anomalous patterns automatically.',
+  },
+  {
+    icon: '🎛️',
+    title: '4 TLS Migration Policies',
+    description: 'Go quantum-safe at your own pace. From CLASSICAL_ALLOWED for legacy support to PQC_ONLY for maximum security.',
+  },
+  {
+    icon: '🔄',
+    title: 'Drop-in Replacement',
+    description: 'Replace Kong, Apigee, or Nginx without rewriting your stack. Same routing, same patterns — with quantum-safe security added.',
+  },
+  {
+    icon: '🛡️',
+    title: 'Zero-Trust Architecture',
+    description: 'JWT + API key auth, per-IP rate limiting, HSTS, CSP, CORS, role-based access control. Defense in depth at every layer.',
+  },
+];
+---
+
+<section class="py-24 px-6 relative">
+  <div class="max-w-7xl mx-auto">
+    <SectionHeading
+      id="features"
+      title="Quantum-Safe Security, Zero Compromise"
+      subtitle="Enterprise API gateway features with post-quantum TLS built into the core"
+    />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {features.map((feature, i) => (
+        <FeatureCard
+          icon={feature.icon}
+          title={feature.title}
+          description={feature.description}
+          stagger={i + 1}
+        />
+      ))}
+    </div>
+  </div>
+</section>
